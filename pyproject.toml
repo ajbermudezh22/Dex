@@ -15,6 +15,7 @@ ignore = [
 "core/tests/*" = ["F401"]
 "core/mcp/onboarding_server.py" = ["F401"]  # imports used to test package availability
 "core/mcp/work_server.py" = ["F401"]  # optional imports for feature detection
+"core/paths.py" = ["F401"]  # sys imported for future use
 
 [tool.pytest.ini_options]
 testpaths = ["core/tests"]

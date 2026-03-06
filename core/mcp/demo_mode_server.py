@@ -16,24 +16,24 @@ The PTY wrapper (launch.py) remains as a safety net for terminal output,
 but this MCP is the PRIMARY defense — filtering at the source.
 """
 
-import os
-import sys
 import json
 import logging
 import re
-from pathlib import Path
-from typing import Dict, List, Optional, Set
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Set
 
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
 import mcp.server.stdio
 import mcp.types as types
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
 
 # Health system — error queue and health reporting
 try:
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    from core.utils.dex_logger import log_error as _log_health_error, mark_healthy as _mark_healthy
+    from core.utils.dex_logger import log_error as _log_health_error
+    from core.utils.dex_logger import mark_healthy as _mark_healthy
     _HAS_HEALTH = True
 except ImportError:
     _HAS_HEALTH = False
@@ -46,7 +46,8 @@ logger = logging.getLogger(__name__)
 _repo_root = str(Path(__file__).parent.parent.parent)
 if _repo_root not in sys.path:
     sys.path.append(_repo_root)
-from core.paths import VAULT_ROOT as BASE_DIR, STATE_FILE
+from core.paths import STATE_FILE
+from core.paths import VAULT_ROOT as BASE_DIR
 
 # Minimum character length for name parts (avoid false positives)
 MIN_TERM_LENGTH = 3

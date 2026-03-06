@@ -14,12 +14,12 @@ Usage in skills:
     from analytics_helper import fire_event, check_consent, mark_feature_used
 """
 
+import hashlib
 import os
 import re
-import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 try:
     import requests

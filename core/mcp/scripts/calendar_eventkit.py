@@ -13,10 +13,11 @@ Usage:
     calendar_eventkit.py attendees <calendar_name> <start_offset> <end_offset>
 """
 
-import sys
 import json
+import sys
 import threading
 from datetime import datetime, timedelta
+
 import EventKit
 
 

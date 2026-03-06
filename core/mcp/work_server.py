@@ -12,26 +12,26 @@ Provides deterministic operations through structured tools with:
 - Progress tracking and rollup across planning levels
 """
 
-import os
-import sys
 import json
 import logging
+import os
 import re
-from pathlib import Path
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta, date
+import sys
 from collections import Counter
+from datetime import date, datetime, timedelta
 from difflib import SequenceMatcher
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:
     import yaml
 except ImportError:
     yaml = None  # Will fall back to defaults if yaml not available
 
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
 import mcp.server.stdio
 import mcp.types as types
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
 
 # QMD semantic search (optional - gracefully degrade if not available)
 try:
@@ -60,12 +60,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 # Import reference formatter for Obsidian wiki link support
 try:
     from core.utils.reference_formatter import (
-        format_person_reference,
-        format_project_reference,
         format_company_reference,
         format_meeting_reference,
+        format_person_reference,
+        format_project_reference,
         format_task_reference,
-        get_obsidian_mode
+        get_obsidian_mode,
     )
     HAS_REFERENCE_FORMATTER = True
 except ImportError:
@@ -82,14 +82,16 @@ except ImportError:
 
 # Health system — error queue and health reporting
 try:
-    from core.utils.dex_logger import log_error as _log_health_error, mark_healthy as _mark_healthy
+    from core.utils.dex_logger import log_error as _log_health_error
+    from core.utils.dex_logger import mark_healthy as _mark_healthy
     _HAS_HEALTH = True
 except ImportError:
     _HAS_HEALTH = False
 
 # Timezone-aware date/time (respects user-profile.yaml timezone)
 try:
-    from core.utils.timezone import now as _tz_now, today as _tz_today
+    from core.utils.timezone import now as _tz_now
+    from core.utils.timezone import today as _tz_today
 except ImportError:
     def _tz_now():
         return datetime.now()
@@ -108,11 +110,25 @@ _repo_root = str(Path(__file__).parent.parent.parent)
 if _repo_root not in sys.path:
     sys.path.append(_repo_root)
 from core.paths import (
-    VAULT_ROOT as BASE_DIR, TASKS_FILE, WEEK_PRIORITIES_FILE,
-    QUARTER_GOALS_FILE, GOALS_FILE, INBOX_DIR, PILLARS_FILE,
-    SKILL_RATINGS_FILE, COMPANIES_DIR, PEOPLE_DIR, MEETINGS_DIR,
-    PEOPLE_INDEX_FILE, MEETING_CACHE_FILE, USER_PROFILE_FILE, DEMO_DIR,
+    COMPANIES_DIR,
+    DEMO_DIR,
+    GOALS_FILE,
+    INBOX_DIR,
+    MEETING_CACHE_FILE,
+    MEETINGS_DIR,
+    PEOPLE_DIR,
+    PEOPLE_INDEX_FILE,
+    PILLARS_FILE,
+    QUARTER_GOALS_FILE,
+    SKILL_RATINGS_FILE,
+    TASKS_FILE,
+    USER_PROFILE_FILE,
+    WEEK_PRIORITIES_FILE,
 )
+from core.paths import (
+    VAULT_ROOT as BASE_DIR,
+)
+
 
 def is_demo_mode() -> bool:
     """Check if demo mode is enabled in user-profile.yaml"""
@@ -1237,7 +1253,7 @@ def refresh_company_page(company_path: str) -> Dict[str, Any]:
             meetings_section += f"| {meeting['date']} | {meeting['title']} | [{meeting['date']}]({meeting['filepath']}) |\n"
     else:
         meetings_section += "*No meetings found. Add domains to this company page for automatic matching.*\n"
-    meetings_section += f"\n*Meetings detected by email domain matching*"
+    meetings_section += "\n*Meetings detected by email domain matching*"
     
     # Build Related Tasks section
     tasks_section = "## Related Tasks\n\n"
@@ -4834,7 +4850,7 @@ async def _main():
     """Async main entry point for the MCP server"""
     if _HAS_HEALTH:
         _mark_healthy("work-mcp")
-    logger.info(f"Starting Dex Work MCP Server")
+    logger.info("Starting Dex Work MCP Server")
     logger.info(f"Vault path: {BASE_DIR}")
     logger.info(f"Tasks file: {get_tasks_file()}")
     logger.info(f"Pillars loaded: {list(PILLARS.keys())}")

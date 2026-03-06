@@ -14,18 +14,17 @@ Tools:
 
 import asyncio
 import json
+import logging
 import re
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
-import logging
 
-from mcp.server.models import InitializationOptions
-from mcp.server import NotificationOptions, Server
-from mcp.types import Resource, Tool, TextContent
 import mcp.server.stdio
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
+from mcp.types import TextContent, Tool
 
 # QMD semantic search (optional - gracefully degrade if not available)
 try:
@@ -37,7 +36,8 @@ except ImportError:
 # Health system — error queue and health reporting
 try:
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    from core.utils.dex_logger import log_error as _log_health_error, mark_healthy as _mark_healthy
+    from core.utils.dex_logger import log_error as _log_health_error
+    from core.utils.dex_logger import mark_healthy as _mark_healthy
     _HAS_HEALTH = True
 except ImportError:
     _HAS_HEALTH = False
@@ -54,9 +54,15 @@ _repo_root = str(Path(__file__).parent.parent.parent)
 if _repo_root not in sys.path:
     sys.path.append(_repo_root)
 from core.paths import (
-    VAULT_ROOT, COMMITMENT_QUEUE_FILE as QUEUE_FILE,
+    COMMITMENT_QUEUE_FILE as QUEUE_FILE,
+)
+from core.paths import (
     USER_PROFILE_FILE as USER_PROFILE,
 )
+from core.paths import (
+    VAULT_ROOT,
+)
+
 VAULT_PATH = str(VAULT_ROOT)
 
 # ============================================================================

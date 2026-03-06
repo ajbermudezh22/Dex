@@ -4,13 +4,13 @@ Tests for Commitment Detection MCP Server
 Run with: pytest core/mcp/tests/test_commitment_server.py -v
 """
 
-import pytest
-import json
 import os
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock, AsyncMock
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -19,13 +19,10 @@ from commitment_server import (
     detect_commitment_type,
     extract_deadline,
     extract_person_name,
-    match_to_vault_context,
     generate_commitment_id,
     load_queue,
+    match_to_vault_context,
     save_queue,
-    INBOUND_PATTERNS,
-    OUTBOUND_PATTERNS,
-    DEADLINE_PATTERNS,
 )
 
 

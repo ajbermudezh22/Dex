@@ -18,21 +18,22 @@ Tools:
 - granola_search_meetings: Search meetings by title or attendee
 """
 
-import os
 import json
 import logging
+import os
 import platform
 import re
-import requests
 import time
+from datetime import date, datetime, timedelta
 from pathlib import Path
-from datetime import datetime, date, timedelta
-from typing import Optional, Dict, List, Any
+from typing import Any, Dict, List, Optional
 
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
 import mcp.server.stdio
 import mcp.types as types
+import requests
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
+
 
 # Granola paths (cross-platform)
 def _find_latest_cache(granola_dir):
@@ -189,11 +190,11 @@ def fetch_from_api(endpoint: str, data: Dict[str, Any], retries: int = 2) -> Opt
                 return result
             elif response.status_code == 429:
                 # Rate limited - don't retry, fall back to cache
-                logger.warning(f"API rate limited (429), falling back to cache")
+                logger.warning("API rate limited (429), falling back to cache")
                 return None
             elif response.status_code == 401:
                 # Auth failed - don't retry
-                logger.warning(f"API auth failed (401), token may be expired")
+                logger.warning("API auth failed (401), token may be expired")
                 return None
             else:
                 logger.warning(f"API returned {response.status_code}: {response.text[:200]}")
@@ -578,7 +579,7 @@ def get_meeting_details(meeting_id: str) -> Optional[Dict[str, Any]]:
     if api_response and 'docs' in api_response:
         for doc in api_response['docs']:
             if doc.get('id') == meeting_id:
-                logger.info(f"Found meeting in API data")
+                logger.info("Found meeting in API data")
                 info = convert_api_doc_to_meeting_info(doc)
                 
                 # Extract action items from notes

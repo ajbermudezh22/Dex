@@ -9,28 +9,27 @@ Usage:
     python analytics_server.py
 """
 
+import json
 import os
 import sys
-import json
-import hashlib
 
 # Health system — error queue and health reporting
 try:
     sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', '..')))
-    from core.utils.dex_logger import log_error as _log_health_error, mark_healthy as _mark_healthy
+    from core.utils.dex_logger import log_error as _log_health_error
+    from core.utils.dex_logger import mark_healthy as _mark_healthy
     _HAS_HEALTH = True
 except ImportError:
     _HAS_HEALTH = False
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 # MCP SDK imports
 try:
     from mcp.server import Server
-    from mcp.types import Tool, TextContent
     from mcp.server.stdio import stdio_server
+    from mcp.types import TextContent, Tool
 except ImportError:
     print("Error: MCP SDK not installed. Run: pip install mcp", file=sys.stderr)
     sys.exit(1)
@@ -38,13 +37,13 @@ except ImportError:
 # Import analytics helper (same directory)
 sys.path.insert(0, str(Path(__file__).parent))
 from analytics_helper import (
-    is_analytics_enabled,
     check_consent,
-    get_visitor_info,
-    get_analytics_transport,
     fire_event,
-    load_user_profile,
+    get_analytics_transport,
     get_vault_path,
+    get_visitor_info,
+    is_analytics_enabled,
+    load_user_profile,
 )
 
 try:

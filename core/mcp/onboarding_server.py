@@ -13,26 +13,26 @@ Features:
 - PARA folder structure creation
 """
 
-import os
-import sys
 import json
 import logging
-import re
+import os
 import platform
+import re
 import subprocess
+import sys
+from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-from datetime import datetime, date
+from typing import Any, Dict, List, Optional
 
 try:
     import yaml
 except ImportError:
     yaml = None
 
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
 import mcp.server.stdio
 import mcp.types as types
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -50,9 +50,17 @@ _repo_root = str(Path(__file__).parent.parent.parent)
 if _repo_root not in sys.path:
     sys.path.append(_repo_root)
 from core.paths import (
-    VAULT_ROOT as BASE_DIR, SESSION_FILE, MARKER_FILE,
-    USER_PROFILE_FILE, USER_PROFILE_TEMPLATE, PILLARS_FILE,
-    CLAUDE_MD, MCP_CONFIG_EXAMPLE, MCP_CONFIG_TARGET,
+    CLAUDE_MD,
+    MARKER_FILE,
+    MCP_CONFIG_EXAMPLE,
+    MCP_CONFIG_TARGET,
+    PILLARS_FILE,
+    SESSION_FILE,
+    USER_PROFILE_FILE,
+    USER_PROFILE_TEMPLATE,
+)
+from core.paths import (
+    VAULT_ROOT as BASE_DIR,
 )
 
 # Role definitions for validation
@@ -579,7 +587,7 @@ Based on your calendar and pillars, here are suggested priorities:
     for i, pillar in enumerate(pillars[:3], 1):
         content += f"{i}. **{pillar}**: [Define specific outcome for this week]\n"
     
-    content += f"\n## Meeting Overview\n\n"
+    content += "\n## Meeting Overview\n\n"
     content += f"You have **{len(events)} meetings** scheduled this week.\n\n"
     
     # Group by day
