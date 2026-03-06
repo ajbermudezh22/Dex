@@ -41,7 +41,7 @@ if (skipExts.includes(ext)) {
 }
 
 const VAULT_ROOT = process.env.CLAUDE_PROJECT_DIR || process.env.VAULT_PATH || process.cwd();
-const PEOPLE_DIR = path.join(VAULT_ROOT, 'People');
+const PEOPLE_DIR = path.join(VAULT_ROOT, '05-Areas', 'People');
 
 // Build an index of all person names to their files
 function buildPersonIndex() {

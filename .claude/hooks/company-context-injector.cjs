@@ -42,9 +42,9 @@ if (skipExts.includes(ext)) {
 
 const VAULT_ROOT = process.env.CLAUDE_PROJECT_DIR || process.env.VAULT_PATH || process.cwd();
 // Primary location for company pages (new universal pattern)
-const COMPANIES_DIR = path.join(VAULT_ROOT, '02-Areas', 'Companies');
+const COMPANIES_DIR = path.join(VAULT_ROOT, '05-Areas', 'Companies');
 // Legacy location for backwards compatibility
-const ACCOUNTS_DIR = path.join(VAULT_ROOT, '02-Areas', 'Accounts');
+const ACCOUNTS_DIR = path.join(VAULT_ROOT, '05-Areas', 'Accounts');
 
 // Helper function to recursively scan a directory for company files
 function scanDir(dirPath, index) {
@@ -113,7 +113,7 @@ try {
   const foundCompanies = new Set();
   
   // Method 1: File path references (05-Areas/Companies/ or 05-Areas/Accounts/)
-  const fileRefPattern = /02-Areas\/(?:Companies|Accounts)\/[^\s]*?([A-Za-z0-9_-]+)(?:\.md)?/g;
+  const fileRefPattern = /05-Areas\/(?:Companies|Accounts)\/[^\s]*?([A-Za-z0-9_-]+)(?:\.md)?/g;
   let match;
   while ((match = fileRefPattern.exec(content)) !== null) {
     const name = match[1].toLowerCase();
