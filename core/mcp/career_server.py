@@ -13,12 +13,13 @@ Tools:
 """
 
 import os
+import re
 import sys
 import json
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from mcp.server import Server, NotificationOptions
 from mcp.server.models import InitializationOptions
@@ -40,6 +41,11 @@ except ImportError:
     HAS_ANALYTICS = False
     def _fire_analytics_event(event_name, properties=None):
         return {'fired': False, 'reason': 'analytics_not_available'}
+
+# Ensure sibling modules (career_parser) and repo root are importable
+_mcp_dir = str(Path(__file__).parent)
+if _mcp_dir not in sys.path:
+    sys.path.insert(0, _mcp_dir)
 
 # Import parsing utilities
 from career_parser import (

@@ -44,6 +44,11 @@ except ImportError:
     def _fire_analytics_event(event_name, properties=None):
         return {'fired': False, 'reason': 'analytics_not_available'}
 
+# Ensure sibling modules (resume_parser) are importable
+_mcp_dir = str(Path(__file__).parent)
+if _mcp_dir not in sys.path:
+    sys.path.insert(0, _mcp_dir)
+
 # Import resume utilities
 from resume_parser import (
     ResumeSession,
