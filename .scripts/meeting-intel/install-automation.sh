@@ -70,11 +70,18 @@ if [ "$1" = "--status" ]; then
     exit 0
 fi
 
-# Re-authenticate with Granola
+# Check Granola authentication
 if [ "$1" = "--auth" ]; then
-    echo "Re-authenticating with Granola MCP..."
-    "$NODE_PATH" "$SCRIPT_DIR/granola-auth.cjs" --setup
-    exit $?
+    echo "Checking Granola authentication..."
+    SUPABASE_JSON="$HOME/Library/Application Support/Granola/supabase.json"
+    if [ -f "$SUPABASE_JSON" ]; then
+        echo -e "${GREEN}✓${NC} Granola credentials found (supabase.json)"
+        echo "  Granola stores auth automatically — no manual setup needed."
+    else
+        echo -e "${RED}✗${NC} Granola credentials not found."
+        echo "  Open the Granola desktop app and sign in — credentials are created automatically."
+    fi
+    exit 0
 fi
 
 # Stop and uninstall
@@ -121,26 +128,13 @@ else
     echo -e "${YELLOW}!${NC} Granola cache not found. Install Granola and record a meeting first."
 fi
 
-# Authenticate with Granola MCP
-GRANOLA_TOKENS="$HOME/.config/dex/granola-tokens.json"
-if [ -f "$GRANOLA_TOKENS" ]; then
-    echo -e "${GREEN}✓${NC} Granola MCP authentication found"
+# Check Granola authentication (supabase.json — created automatically by Granola app)
+SUPABASE_JSON="$HOME/Library/Application Support/Granola/supabase.json"
+if [ -f "$SUPABASE_JSON" ]; then
+    echo -e "${GREEN}✓${NC} Granola credentials found (supabase.json)"
 else
-    echo ""
-    echo "Authenticating with Granola..."
-    echo "This will open your browser to sign in to Granola."
-    echo ""
-    read -p "Press Enter to continue (or Ctrl+C to skip)..."
-
-    if [ -n "$NODE_PATH" ]; then
-        "$NODE_PATH" "$SCRIPT_DIR/granola-auth.cjs" --setup
-        if [ $? -eq 0 ] && [ -f "$GRANOLA_TOKENS" ]; then
-            echo -e "${GREEN}✓${NC} Granola MCP authenticated"
-        else
-            echo -e "${YELLOW}!${NC} Granola auth skipped. Background sync will use local cache only."
-            echo "    Run: node .scripts/meeting-intel/granola-auth.cjs --setup"
-        fi
-    fi
+    echo -e "${YELLOW}!${NC} Granola credentials not found. Open Granola desktop app and sign in."
+    echo "    Credentials are stored automatically — no manual auth step needed."
 fi
 
 # Write vault-path breadcrumb (used by dex-launcher.sh for resilient path resolution)
@@ -206,10 +200,7 @@ echo ""
 echo "Commands:"
 echo "  ./install-automation.sh --status    Check if running"
 echo "  ./install-automation.sh --stop      Disable background sync"
-echo "  ./install-automation.sh --auth      Re-authenticate with Granola"
-echo ""
-echo "  node .scripts/meeting-intel/granola-auth.cjs --status   Check Granola auth"
-echo "  node .scripts/meeting-intel/granola-auth.cjs --setup    Re-authenticate"
+echo "  ./install-automation.sh --auth      Check Granola credentials"
 echo ""
 echo "Logs:"
 echo "  $LOG_DIR/meeting-intel.stdout.log"
