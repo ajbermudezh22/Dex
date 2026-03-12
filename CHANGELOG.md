@@ -7,6 +7,21 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.18.2] — Fix Background Meeting Sync Installation (2026-03-12)
+
+`install-automation.sh` failed because it referenced two files that no longer exist: `granola-auth.cjs` (deprecated — Granola now stores credentials in `supabase.json` automatically) and `sync-from-granola-v2.cjs` (never shipped — v1 works fine).
+
+**What changed:**
+
+* Plist template now points to `sync-from-granola.cjs` (the script that actually exists)
+* Install script checks for `supabase.json` instead of calling the removed `granola-auth.cjs`
+* No more interactive browser auth step — Granola handles credentials automatically
+* `--auth` flag now checks credential status instead of launching a dead script
+
+**What you need to do:** Run `./install-automation.sh` again — it should complete without errors now.
+
+---
+
 ## [1.18.1] — Meeting Sync Now Works Reliably Again (2026-03-05)
 
 In v1.17.0, we switched background meeting sync to use Granola's official MCP server — thinking the "official" route would be more reliable. Turns out, the MCP server sends meeting data back in a format designed for AI to read in conversation, not for code to process in the background. The sync script expected structured data, got free-form text, couldn't make sense of it, and quietly fell back to old cached data. Meetings were going missing with no error message.
