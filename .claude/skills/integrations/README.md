@@ -6,11 +6,20 @@ Connect your favorite tools to Dex for richer context in meetings, person pages,
 
 | Skill | Tool | Auth Complexity | Time |
 |-------|------|-----------------|------|
+| `/linear-setup` | Linear | ⭐ Easiest (OAuth, no API key) | 30 sec |
 | `/integrate-notion` | Notion | ⭐ Easy (token) | 2 min |
 | `/integrate-slack` | Slack | ⭐⭐ Medium | 3 min |
 | `/integrate-google` | Google Workspace | ⭐⭐⭐ Complex (OAuth) | 5 min |
 
 ## What You Get
+
+### Linear Integration
+- Live issue tracking in daily plans and weekly priorities
+- "Show my tickets" or "What's assigned to me?" → instant results
+- Meeting prep includes open issues for attendees' teams
+- Sprint/cycle awareness in planning workflows
+- Project status queries: "What's the status of [project]?"
+- **No API key needed** — uses Claude Code's built-in OAuth
 
 ### Notion Integration
 - Search your Notion workspace from Dex
@@ -32,9 +41,10 @@ Connect your favorite tools to Dex for richer context in meetings, person pages,
 
 ## Setup Order Recommendation
 
-1. **Notion** — Simplest setup, immediate value
-2. **Slack** — High value for meeting prep
-3. **Google** — Most complex, save for last
+1. **Linear** — Easiest setup (OAuth, 30 sec), high value for engineering teams
+2. **Notion** — Simple setup, immediate value
+3. **Slack** — High value for meeting prep
+4. **Google** — Most complex, save for last
 
 ## Configuration
 

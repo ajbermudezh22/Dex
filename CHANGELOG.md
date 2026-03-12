@@ -7,6 +7,22 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.0] — Linear Integration (2026-03-12)
+
+**Before:** No way to connect Linear to Dex. If you wanted issue context in your daily plans or meeting prep, you had to manually copy-paste from Linear.
+
+**Now:** Run `/linear-setup` (or connect during onboarding) — type `/mcp`, click "Connect" next to Linear, sign in with your browser. Done in 30 seconds, no API key needed.
+
+**What you get:**
+* `/daily-plan` shows your assigned issues and current cycle progress
+* `/meeting-prep` pulls open issues for attendees' teams
+* `/week-plan` includes cycle goals in weekly priorities
+* Ask "show my tickets" or "what's assigned to me?" anytime
+* Project status queries: "What's the status of [project]?"
+
+**Technical:** Linear uses Claude Code's built-in OAuth — no npm package, no config editing, no restart. This is a new integration pattern (`detect_builtin_oauth` in `detect.py`) that future OAuth integrations can follow.
+
+---
 ## [1.18.1] — Meeting Sync Now Works Reliably Again (2026-03-05)
 
 In v1.17.0, we switched background meeting sync to use Granola's official MCP server — thinking the "official" route would be more reliable. Turns out, the MCP server sends meeting data back in a format designed for AI to read in conversation, not for code to process in the background. The sync script expected structured data, got free-form text, couldn't make sense of it, and quietly fell back to old cached data. Meetings were going missing with no error message.

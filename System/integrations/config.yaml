@@ -9,11 +9,13 @@ enabled:
   notion: false
   slack: true
   google: false
+  linear: false
 
 # Integration-specific settings are stored in separate files:
 # - notion.yaml (Notion-specific config)
 # - slack.yaml (Slack-specific config)
 # - google.yaml (Google-specific config)
+# - linear uses Claude Code built-in OAuth (no separate config file needed)
 
 # Integration hooks - which Dex features use integrations
 hooks:
@@ -21,16 +23,22 @@ hooks:
     use_notion: true      # Pull relevant Notion docs
     use_slack: true       # Pull recent Slack context with attendees
     use_google: true      # Pull email threads with attendees
-  
+    use_linear: true      # Show open issues for attendees' teams
+
   person_pages:
     use_notion: true      # Link Notion pages
     use_slack: true       # Show Slack mentions
     use_google: true      # Show email history
-  
+    use_linear: true      # Show assigned issues
+
   daily_plan:
     use_notion: false     # Not used by default
-    use_slack: true      # Not used by default  
+    use_slack: true      # Not used by default
     use_google: true      # Surface emails needing response
+    use_linear: true      # Surface assigned issues and cycle progress
+
+  week_plan:
+    use_linear: true      # Pull cycle goals into weekly priorities
 
   commitment_detection:
     use_slack: true       # Detect promises in Slack
@@ -40,3 +48,4 @@ detected:
   notion: null
   slack: null
   google: null
+  linear: null

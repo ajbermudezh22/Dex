@@ -447,6 +447,10 @@ Say: "Now the fun part — I just scanned your vault to see what tools you use."
 ```
 **Here are the integrations available, organized by category:**
 
+**Project & Issue Tracking:**
+- Linear — Live issue tracking, cycle awareness. Setup: 30 sec (OAuth, no API key)
+- Atlassian (Jira + Confluence) — Tickets and docs in daily plans. Setup: 3 min
+
 **Communication & Email:**
 - Google Workspace (Gmail + Calendar + Docs) — Email digest, follow-up detection. Setup: 3 min
 - Microsoft Teams — Teams digest alongside Slack. Setup: 2 min
@@ -458,7 +462,6 @@ Say: "Now the fun part — I just scanned your vault to see what tools you use."
 
 **Meetings & Knowledge:**
 - Zoom — Recording access and scheduling. Setup: 2 min
-- Atlassian (Jira + Confluence) — Tickets and docs in daily plans. Setup: 3 min
 ```
 
 **IF already_connected items exist, mention them:**

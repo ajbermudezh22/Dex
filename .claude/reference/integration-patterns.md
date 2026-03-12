@@ -127,14 +127,40 @@ For each enabled integration with relevant capabilities:
 - Health checkers read to know what to verify
 - Commented-out sections are templates
 
+## Built-in OAuth Integrations
+
+Some integrations use Claude Code's built-in OAuth flow instead of local npx MCP servers. These are the **easiest** integrations to set up — no API key, no config editing, no restart.
+
+### How they differ from npx integrations
+
+| Aspect | npx (Notion, Slack, Google) | Built-in OAuth (Linear) |
+|--------|----------------------------|------------------------|
+| Auth | API key or token | `/mcp` → click Connect → browser OAuth |
+| Config | Edits `claude_desktop_config.json` | Nothing — Claude Code manages it |
+| Package | npx installs npm package | No package needed |
+| Restart | Requires Claude Desktop restart | Works immediately |
+| Detection | Scan Claude Desktop config JSON | Check if `mcp__<service>__*` tools available |
+| Credentials | Stored in Claude Desktop config | Managed by Claude Code |
+
+### Current built-in OAuth integrations
+- **Linear** — `mcp__linear__*` tools (issues, projects, cycles, documents, teams)
+
+### Setup pattern for built-in OAuth
+1. Check if tools are already available (call a simple tool like `list_teams`)
+2. If not: guide user to type `/mcp` → find service → click Connect → OAuth in browser
+3. Verify connection by calling a tool
+4. Configure preferences (trust level)
+5. Update `System/integrations/config.yaml`
+6. Show capability cascade
+
 ## Vault Scanner (Integration Concierge)
 
 The concierge (`integration-concierge.cjs`) scans vault files for tool signals:
-- Direct keyword mentions ("Todoist", "Jira")
-- URL patterns (zoom.us, trello.com)
+- Direct keyword mentions ("Todoist", "Jira", "Linear")
+- URL patterns (zoom.us, trello.com, linear.app)
 - Calendar signatures ("Teams meeting")
 - Email patterns (@gmail.com in person pages)
-- Ticket IDs (PROJ-123 for Jira)
+- Ticket IDs (PROJ-123 for Jira, TEK-123 for Linear)
 
 Returns ranked recommendations: high_value / moderate_value / available.
 Called by onboarding Step 8 and `/getting-started`.

@@ -479,6 +479,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/dex-update` - Update Dex automatically (shows what's new, updates if confirmed, no technical knowledge needed)
 - `/dex-rollback` - Undo last update if something went wrong
 - `/getting-started` - Interactive post-onboarding tour (adaptive to your setup)
+- `/linear-setup` - Connect Linear for live issue tracking (OAuth, 30 sec, no API key)
 - `/integrate-mcp` - Connect tools from Smithery.ai marketplace
 - `/scrape` - Web scraping with stealth, anti-bot bypass, CSS selectors (no API key needed)
 - `/identity-snapshot` - Generate a living profile of your working patterns from Dex data

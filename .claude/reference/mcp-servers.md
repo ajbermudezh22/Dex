@@ -271,7 +271,7 @@ User runs `/dex-update` → Update Checker MCP checks GitHub → finds v2.1.0 wi
 | Resume | `resume_server.py` | Built-in |
 | Onboarding | `onboarding_server.py` | Built-in |
 | Update Checker | `update_checker.py` | Built-in |
-| Dex Improvements | `dex_improvements_server.py` | Built-in |
+| Linear | Built-in OAuth (`mcp__linear`) | External (Claude Code OAuth) |
 | Pendo | Hosted (OAuth) | External (optional) |
 
 ### Setting Up Integrations

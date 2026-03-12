@@ -2,8 +2,11 @@
 """
 Integration Detection Helper
 
-Detects existing MCP configurations for Notion, Slack, and Google.
+Detects existing MCP configurations for Notion, Slack, Google, and Linear.
 Used by onboarding and /dex-update to offer smart upgrade paths.
+
+Linear uses a different detection approach: it relies on Claude Code's built-in
+OAuth (mcp__linear__* tools) rather than npx packages in Claude Desktop config.
 """
 
 import json
@@ -24,6 +27,7 @@ class DetectionResult(TypedDict):
     notion: IntegrationStatus
     slack: IntegrationStatus
     google: IntegrationStatus
+    linear: IntegrationStatus
     any_installed: bool
     any_upgradeable: bool
 
@@ -43,6 +47,11 @@ RECOMMENDED = {
         "package": "mcp-google",
         "name": "Google Workspace MCP",
         "benefits": ["Calendar + Gmail + Contacts", "OAuth helper", "Well documented"]
+    },
+    "linear": {
+        "package": "mcp__linear (built-in OAuth)",
+        "name": "Linear (Claude Code OAuth)",
+        "benefits": ["No API key needed", "Built-in OAuth via /mcp", "Full issue/project/cycle access"]
     }
 }
 
@@ -67,6 +76,12 @@ KNOWN_PACKAGES = {
         "mcp-google-docs",
         "@suncreation/mcp-google-docs",
         "mcp-google-sheets",
+    ],
+    "linear": [
+        "mcp__linear",        # Built-in OAuth (recommended — no package needed)
+        "linear-mcp-server",
+        "mcp-linear",
+        "@anthropic/linear-mcp",
     ]
 }
 
@@ -104,8 +119,52 @@ def load_claude_config() -> Optional[dict]:
         return None
 
 
-def detect_integration(service: str, config: dict) -> IntegrationStatus:
-    """Detect if a specific integration is installed."""
+def detect_builtin_oauth(service: str, available_tools: Optional[list] = None) -> IntegrationStatus:
+    """Detect if a built-in OAuth integration is connected.
+
+    Built-in OAuth integrations (like Linear) use Claude Code's /mcp command
+    and appear as mcp__<service>__* tools rather than npx packages.
+
+    Args:
+        service: Integration name (e.g., "linear")
+        available_tools: List of available tool names. If None, returns unknown status.
+    """
+    result: IntegrationStatus = {
+        "installed": False,
+        "package": None,
+        "version": None,
+        "config_path": "Claude Code built-in OAuth",
+        "is_dex_recommended": True,  # Built-in OAuth is always the recommended approach
+        "recommendation": None
+    }
+
+    if available_tools is None:
+        return result
+
+    prefix = f"mcp__{service}__"
+    matching = [t for t in available_tools if t.startswith(prefix)]
+
+    if matching:
+        result["installed"] = True
+        result["package"] = f"mcp__{service} (built-in OAuth)"
+
+    return result
+
+
+# Services that use built-in OAuth instead of npx packages
+BUILTIN_OAUTH_SERVICES = {"linear"}
+
+
+def detect_integration(service: str, config: dict, available_tools: Optional[list] = None) -> IntegrationStatus:
+    """Detect if a specific integration is installed.
+
+    For built-in OAuth services (Linear), checks available tools instead of config.
+    For npx-based services (Notion, Slack, Google), checks Claude Desktop config.
+    """
+    # Built-in OAuth services use a different detection path
+    if service in BUILTIN_OAUTH_SERVICES:
+        return detect_builtin_oauth(service, available_tools)
+
     result: IntegrationStatus = {
         "installed": False,
         "package": None,
@@ -114,17 +173,17 @@ def detect_integration(service: str, config: dict) -> IntegrationStatus:
         "is_dex_recommended": False,
         "recommendation": None
     }
-    
+
     mcp_servers = config.get("mcpServers", {})
     known = KNOWN_PACKAGES.get(service, [])
     recommended = RECOMMENDED.get(service, {}).get("package")
-    
+
     # Check each known package
     for server_name, server_config in mcp_servers.items():
         # Check by command/args for npx-style configs
         command = server_config.get("command", "")
         args = server_config.get("args", [])
-        
+
         # Detect package from npx command
         if command == "npx":
             for arg in args:
@@ -133,46 +192,52 @@ def detect_integration(service: str, config: dict) -> IntegrationStatus:
                     result["package"] = arg.split("@")[0] if "@" in arg else arg
                     result["is_dex_recommended"] = arg.startswith(recommended) if recommended else False
                     break
-        
+
         # Also check server name for matches
         server_lower = server_name.lower()
         if any(svc in server_lower for svc in [service, service.replace("google", "goog")]):
             result["installed"] = True
             if not result["package"]:
                 result["package"] = server_name
-    
+
     # Add recommendation if not using Dex recommended
     if result["installed"] and not result["is_dex_recommended"] and recommended:
         rec = RECOMMENDED[service]
         result["recommendation"] = f"Dex recommends {rec['name']} ({rec['package']}): {', '.join(rec['benefits'])}"
-    
+
     return result
 
 
-def detect_all_integrations() -> DetectionResult:
-    """Detect all productivity integrations."""
+def detect_all_integrations(available_tools: Optional[list] = None) -> DetectionResult:
+    """Detect all productivity integrations.
+
+    Args:
+        available_tools: List of available tool names for detecting built-in OAuth
+                        integrations (e.g., Linear). Pass tool names from the current
+                        session if available.
+    """
     config = load_claude_config() or {}
-    
+
     result: DetectionResult = {
         "notion": detect_integration("notion", config),
         "slack": detect_integration("slack", config),
         "google": detect_integration("google", config),
+        "linear": detect_integration("linear", config, available_tools),
         "any_installed": False,
         "any_upgradeable": False
     }
-    
-    result["any_installed"] = any([
-        result["notion"]["installed"],
-        result["slack"]["installed"],
-        result["google"]["installed"]
-    ])
-    
-    result["any_upgradeable"] = any([
-        result["notion"]["installed"] and not result["notion"]["is_dex_recommended"],
-        result["slack"]["installed"] and not result["slack"]["is_dex_recommended"],
-        result["google"]["installed"] and not result["google"]["is_dex_recommended"]
-    ])
-    
+
+    services = ["notion", "slack", "google", "linear"]
+
+    result["any_installed"] = any(
+        result[svc]["installed"] for svc in services
+    )
+
+    result["any_upgradeable"] = any(
+        result[svc]["installed"] and not result[svc]["is_dex_recommended"]
+        for svc in services
+    )
+
     return result
 
 
@@ -180,9 +245,10 @@ def format_detection_report(result: DetectionResult) -> str:
     """Format detection results for user display."""
     lines = ["## Productivity Integration Status\n"]
     
-    for service, status in [("Notion", result["notion"]), 
-                            ("Slack", result["slack"]), 
-                            ("Google", result["google"])]:
+    for service, status in [("Notion", result["notion"]),
+                            ("Slack", result["slack"]),
+                            ("Google", result["google"]),
+                            ("Linear", result["linear"])]:
         if status["installed"]:
             emoji = "✅" if status["is_dex_recommended"] else "⚠️"
             lines.append(f"### {emoji} {service}")
